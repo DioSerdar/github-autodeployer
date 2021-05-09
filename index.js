@@ -4,7 +4,7 @@ const cp = require("child_process");
 const crypto = require('crypto')
 const bodyParser = require('body-parser')
 
-const secret = process.env.PORT;
+const secret = process.env.SECRET;
 
 const sign_header_name = 'X-Hub-Signature-256'
 const sign_hash_algo = 'sha256'
