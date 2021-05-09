@@ -38,7 +38,7 @@ app.get('/',(req,res)=>{
     return res.send(events);
 })
 
-app.post("/",express.json(),(req,res)=>{
+app.post("/",verifyPostData,(req,res)=>{
     const {body} =req;
     events.push(body);
     if(events.length > 20)
