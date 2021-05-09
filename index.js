@@ -27,10 +27,10 @@ function verifyPostData(req, res, next) {
   const hmac = crypto.createHmac(sign_hash_algo, secret)
   const digest = Buffer.from(sign_hash_algo + '=' + hmac.update(req.raw_body).digest('hex'), 'utf8')
   if (sig.length !== digest.length || !crypto.timingSafeEqual(digest, sig)) {
-        body.authenticated = false;
+        req.body.authenticated = false;
         return next();
   }
-  body.authenticated = true;
+  req.body.authenticated = true;
   return next()
 }
 
