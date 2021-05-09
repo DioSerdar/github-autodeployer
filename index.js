@@ -11,7 +11,12 @@ app.get('/',(req,res)=>{
 })
 
 app.post("/",express.json(),(req,res)=>{
+    const sign = req.header("X-Hub-Signature");
     const {body} =req;
+    body.authenticated = false
+    body.sign = sign;
+    if(sign == process.env.SECRET)
+        body.authenticated = true;
     events.push(body);
     if(events.length > 20)
         events.pop();
