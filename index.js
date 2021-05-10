@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require("express");
-const cp = require("child_process");
+const { spawn } = require('child_process');
 const crypto = require('crypto')
 const bodyParser = require('body-parser')
 
@@ -11,15 +11,8 @@ const sign_hash_algo = 'sha256'
 const events = [];
 const app = express()
 
-app.use(bodyParser.json({
-  verify: (req, res, buf, encoding) => {
-    if (buf && buf.length) {
-      req.raw_body = buf.toString(encoding || 'utf8');
-    }
-  },
-}))
 
-function verifyPostData(req, res, next) {
+function verify_request(req, res, next) {
   if (!req.raw_body) {
     return next('Request body empty')
   }
@@ -38,9 +31,33 @@ app.get('/',(req,res)=>{
     return res.send(events);
 })
 
-app.post("/",verifyPostData,(req,res)=>{
+app.use(bodyParser.json({
+    verify: (req, res, buf, encoding) => {
+      if (buf && buf.length) {
+        req.raw_body = buf.toString(encoding || 'utf8');
+      }
+    },
+}))
+
+app.post("/",verify_request,(req,res)=>{
     const {body} =req;
-    events.push(body);
+    if(!body.authenticated)
+    {
+        const ls = spawn('pm2 restart all');
+
+        ls.stdout.on('data', (data) => {
+            console.log(`stdout: ${data}`);
+        });
+        
+        ls.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+        });
+        
+        ls.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+        });
+        
+    }
     if(events.length > 20)
         events.pop();
     return res.send("ok");
