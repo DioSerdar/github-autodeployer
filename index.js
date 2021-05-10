@@ -46,7 +46,7 @@ app.post("/",verify_request,(req,res)=>{
         return res.status(403).send("Unauthorized");
     }
     
-    const ls = spawn('pm2',["restart","all"]);
+    const ls = spawn('pm2',["restart",process.env.APP_NAME || "all"]);
 
     ls.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
