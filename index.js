@@ -43,23 +43,21 @@ app.post("/",verify_request,(req,res)=>{
     const {body} =req;
     if(!body.authenticated)
     {
-        const ls = spawn('pm2 restart all');
-
-        ls.stdout.on('data', (data) => {
-            console.log(`stdout: ${data}`);
-        });
-        
-        ls.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
-        });
-        
-        ls.on('close', (code) => {
-            console.log(`child process exited with code ${code}`);
-        });
-        
+        return res.status(403).send("Unauthorized");
     }
-    if(events.length > 20)
-        events.pop();
+    const ls = spawn('pm2 restart all');
+
+    ls.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+    });
+    
+    ls.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+    });
+    
+    ls.on('close', (code) => {
+        console.log(`child process exited with code ${code}`);
+    });
     return res.send("ok");
 })
 
